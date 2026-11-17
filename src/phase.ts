@@ -27,6 +27,9 @@ export const PHASE_LABEL: Record<string, string> = {
   waiting: "Waiting for board",
   flashing: "Flashing",
   running: "Running",
+  complete: "Complete",
+  failed: "Failed",
+  cancelled: "Cancelled",
 };
 
 /** A flashing build is refused by the API with a 409, so the UI does not offer Cancel. */

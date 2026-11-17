@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import type { RecentBuild } from "../api";
-import { formatWhen, shortId } from "../format";
+import { boardName, formatWhen, shortId } from "../format";
 import { RowStatus } from "./Phase";
 
 export function BuildsTable({ builds }: { builds: RecentBuild[] }) {
@@ -10,14 +10,11 @@ export function BuildsTable({ builds }: { builds: RecentBuild[] }) {
         <thead>
           <tr>
             <th scope="col">Build</th>
+            <th scope="col">Project</th>
             <th scope="col">Status</th>
-            <th scope="col">Submitted</th>
-            <th scope="col" className="num">
-              Duration
-            </th>
-            <th scope="col" className="num">
-              Board
-            </th>
+            <th scope="col">Board</th>
+            <th scope="col">Duration</th>
+            <th scope="col">When</th>
           </tr>
         </thead>
         <tbody>
@@ -25,19 +22,16 @@ export function BuildsTable({ builds }: { builds: RecentBuild[] }) {
             <tr key={b.job_id}>
               <th scope="row">
                 <Link to={`/builds/${b.job_id}`} className="build-link">
-                  <span className="build-name">{b.name}</span>
-                  <span className="mono dim">{shortId(b.job_id)}</span>
+                  #{shortId(b.job_id)}
                 </Link>
-                {b.project ? <span className="dim build-project">{b.project}</span> : null}
               </th>
+              <td>{b.project ?? b.name}</td>
               <td>
                 <RowStatus build={b} />
               </td>
-              <td title={formatWhen(b.submitted_at)}>
-                {b.relative_time ?? formatWhen(b.submitted_at)}
-              </td>
-              <td className="num mono">{b.duration_formatted ?? "—"}</td>
-              <td className="num mono">{b.board_id ?? "—"}</td>
+              <td>{boardName(b.board_id)}</td>
+              <td>{b.duration_formatted ?? "—"}</td>
+              <td title={formatWhen(b.submitted_at)}>{b.relative_time ?? formatWhen(b.submitted_at)}</td>
             </tr>
           ))}
         </tbody>

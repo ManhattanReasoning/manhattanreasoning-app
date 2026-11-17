@@ -2,10 +2,10 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { getOverview, getUsage } from "../api";
 import { Empty, Loading, LoadError, Notice } from "../components/Bits";
-import { BuildsTable } from "../components/BuildsTable";
+import { RunCard } from "../components/RunCard";
 import { UsageMeter } from "../components/UsageMeter";
-import { membershipAction, membershipSummary, membershipWarning } from "../membership";
 import { isInFlight } from "../format";
+import { membershipAction, membershipSummary, membershipWarning } from "../membership";
 import { listRefreshMs, useResource } from "../useResource";
 
 export function Overview() {
@@ -31,12 +31,53 @@ export function Overview() {
         <Notice tone="bad">
           <p>
             <strong>{warning}</strong>{" "}
-            <Link to="/membership">
-              {action === "subscribe" ? "Subscribe" : "Fix your membership"}
-            </Link>
+            <Link to="/membership">{action === "subscribe" ? "Subscribe" : "Fix your membership"}</Link>
           </p>
         </Notice>
       ) : null}
+
+      <section aria-label="Builds" className="runs">
+        {overview.data ? (
+          builds.length > 0 ? (
+            <>
+              <div className="view-tabs" role="tablist" aria-label="Builds">
+                {(["live", "history"] as const).map((id) => (
+                  <button
+                    key={id}
+                    type="button"
+                    role="tab"
+                    aria-selected={tab === id}
+                    className={"view-tab" + (tab === id ? " view-tab-on" : "")}
+                    onClick={() => setPicked(id)}
+                  >
+                    {id === "live" ? "Live" : "History"}{" "}
+                    <span className="view-tab-count">{id === "live" ? live.length : history.length}</span>
+                  </button>
+                ))}
+              </div>
+              {shown.length > 0 ? (
+                shown.map((b) => <RunCard key={b.job_id} build={b} onChanged={() => void overview.reload()} />)
+              ) : (
+                <Empty>
+                  <p>{tab === "live" ? "No builds in flight. Run `mrg run` to start one." : "No finished builds yet."}</p>
+                </Empty>
+              )}
+              <p className="more">
+                <Link to="/builds">All builds</Link>
+              </p>
+            </>
+          ) : (
+            <Empty>
+              <p>No builds yet. Start one from your terminal:</p>
+              <pre className="snippet">mrg run examples/app.py</pre>
+            </Empty>
+          )
+        ) : overview.loading ? (
+          <Loading what="builds" />
+        ) : (
+          <LoadError error={overview.error} onRetry={() => void overview.reload()} />
+        )}
+      </section>
 
       <div className="split">
         <section className="panel" aria-labelledby="usage-h">
@@ -76,61 +117,6 @@ export function Overview() {
           )}
         </section>
       </div>
-
-      <section aria-labelledby="recent-h">
-        <div className="section-head">
-          <h2 id="recent-h">Builds</h2>
-          {overview.data ? (
-            <p className="dim counts">
-              {overview.data.active_builds_count} in flight, {overview.data.total_builds_count}{" "}
-              total
-              {overview.data.board_time_total_formatted
-                ? `, ${overview.data.board_time_total_formatted} of board time`
-                : ""}
-            </p>
-          ) : null}
-        </div>
-        {overview.data ? (
-          builds.length > 0 ? (
-            <>
-              <div className="view-tabs" role="tablist" aria-label="Builds">
-                {(["live", "history"] as const).map((id) => (
-                  <button
-                    key={id}
-                    type="button"
-                    role="tab"
-                    aria-selected={tab === id}
-                    className={"view-tab" + (tab === id ? " view-tab-on" : "")}
-                    onClick={() => setPicked(id)}
-                  >
-                    {id === "live" ? "Live" : "History"}{" "}
-                    <span className="view-tab-count">{id === "live" ? live.length : history.length}</span>
-                  </button>
-                ))}
-              </div>
-              {shown.length > 0 ? (
-                <BuildsTable builds={shown} />
-              ) : (
-                <Empty>
-                  <p>{tab === "live" ? "No builds in flight." : "No finished builds yet."}</p>
-                </Empty>
-              )}
-              <p className="more">
-                <Link to="/builds">All builds and projects</Link>
-              </p>
-            </>
-          ) : (
-            <Empty>
-              <p>No builds yet. Start one from your terminal:</p>
-              <pre className="snippet">mrg run examples/app.py</pre>
-            </Empty>
-          )
-        ) : overview.loading ? (
-          <Loading what="builds" />
-        ) : (
-          <LoadError error={overview.error} onRetry={() => void overview.reload()} />
-        )}
-      </section>
     </>
   );
 }

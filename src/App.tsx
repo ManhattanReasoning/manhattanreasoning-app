@@ -1,10 +1,12 @@
 import { NavLink, Link, Route, Routes } from "react-router-dom";
+import { Account } from "./components/Account";
 import { Loading, LoadError, Logo } from "./components/Bits";
 import { BuildDetail } from "./pages/BuildDetail";
 import { Builds } from "./pages/Builds";
 import { Landing } from "./pages/Landing";
 import { Membership } from "./pages/Membership";
 import { Overview } from "./pages/Overview";
+import { Projects } from "./pages/Projects";
 import { useSession } from "./session";
 
 export function App({ loginError }: { loginError: string | null }) {
@@ -38,20 +40,17 @@ export function App({ loginError }: { loginError: string | null }) {
         <Link to="/" aria-label="Manhattan Reasoning dashboard, Overview">
           <Logo />
         </Link>
+        <span className="ws">{who}</span>
         <div className="spacer" />
-        <div className="who">
-          <span className="mono who-name" title="Signed in as">
-            {who}
-          </span>
-          <button type="button" className="btn btn-quiet" onClick={() => void signOut()}>
-            Sign out
-          </button>
-        </div>
+        <Account profile={state.profile} onSignOut={() => void signOut()} />
       </header>
       <div className="shell">
         <nav className="sidebar" aria-label="Dashboard">
           <NavLink to="/" end className="side-link">
             Overview
+          </NavLink>
+          <NavLink to="/projects" className="side-link">
+            Projects
           </NavLink>
           <NavLink to="/builds" className="side-link">
             Builds
@@ -59,12 +58,17 @@ export function App({ loginError }: { loginError: string | null }) {
           <NavLink to="/membership" className="side-link">
             Membership
           </NavLink>
+          <span className="side-link side-stub" aria-disabled="true" title="Coming soon">
+            Secrets
+            <span className="soon">soon</span>
+          </span>
         </nav>
         <div className="shell-main">
           <main className="page" id="main">
             <Routes>
               <Route path="/" element={<Overview />} />
-              <Route path="/builds" element={<Builds />} />
+              <Route path="/projects" element={<Projects />} />
+          <Route path="/builds" element={<Builds />} />
               <Route path="/builds/:jobId" element={<BuildDetail />} />
               <Route path="/membership" element={<Membership />} />
               <Route

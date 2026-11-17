@@ -1,5 +1,9 @@
-/** "0b6f3c1e…" — enough of a job id to recognise, short enough for a table. */
-export const shortId = (id: string) => `${id.slice(0, 8)}…`;
+/** "0b6f3c1e": enough of a job id to recognise, short enough for a table. */
+export const shortId = (id: string) => id.slice(0, 8);
+
+/** The API names a board by its number ("0".."6"). */
+export const boardName = (id: string | number | null | undefined) =>
+  id == null || id === "" ? "—" : /^\d+$/.test(String(id)) ? `Board ${id}` : String(id);
 
 /** A stable, locale-aware timestamp; the raw value if it does not parse. */
 export function formatWhen(iso: string | null | undefined): string {
@@ -36,7 +40,6 @@ export function statusTone(status: string): "good" | "bad" | "live" | "plain" {
     case "failed":
       return "bad";
     case "running":
-    case "queued":
     case "building":
     case "waiting":
     case "flashing":
