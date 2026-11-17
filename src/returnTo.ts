@@ -3,6 +3,9 @@
 
 const DEFAULT = "/#/";
 
+/** The API rejects a longer `return_to`. */
+const MAX_LENGTH = 512;
+
 /**
  * Turn an in-app route ("/builds/123?x=1") into the `return_to` value the API
  * accepts: a same-origin path that starts with a single "/". Anything that
@@ -10,7 +13,8 @@ const DEFAULT = "/#/";
  */
 export function toReturnTo(route: string | null | undefined): string {
   if (!route || !isSafeRoute(route)) return DEFAULT;
-  return `/#${route}`;
+  const value = `/#${route}`;
+  return value.length <= MAX_LENGTH ? value : DEFAULT;
 }
 
 /** A route is safe if it is an absolute in-app path and nothing else. */

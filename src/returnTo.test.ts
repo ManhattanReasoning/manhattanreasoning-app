@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { signInUrl } from "./api";
+import { signInUrl, webBillingRequest } from "./api";
 import { isSafeRoute, takeLoginError, toReturnTo } from "./returnTo";
 
 describe("toReturnTo", () => {
@@ -14,6 +14,7 @@ describe("toReturnTo", () => {
       expect(toReturnTo(bad)).toBe("/#/");
     }
     expect(isSafeRoute("//evil.example")).toBe(false);
+    expect(toReturnTo(`/builds/${"a".repeat(600)}`)).toBe("/#/");
   });
 
   it("always starts with a single slash and survives encoding into the sign-in URL", () => {
@@ -23,6 +24,15 @@ describe("toReturnTo", () => {
     const url = new URL(signInUrl(value));
     expect(url.pathname).toBe("/auth/github/login");
     expect(url.searchParams.get("return_to")).toBe(value);
+  });
+});
+
+describe("webBillingRequest", () => {
+  it("marks billing calls with a query parameter and sends no body", () => {
+    const { path, init } = webBillingRequest("/billing/checkout");
+    expect(path).toBe("/billing/checkout?source=web");
+    expect(init.method).toBe("POST");
+    expect(init.body).toBeUndefined();
   });
 });
 

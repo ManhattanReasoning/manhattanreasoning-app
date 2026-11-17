@@ -201,20 +201,16 @@ export function signInUrl(returnTo: string): string {
 /**
  * How this app tells the API a billing request came from the dashboard, so
  * Stripe returns the user here instead of to the CLI's landing pages.
- * THE ONE PLACE to change if the API takes the marker another way (for a
- * query parameter, return `{ method: "POST" }` and append it in
- * `startBillingSession`).
+ * THE ONE PLACE that knows the marker's form: a `source=web` query parameter
+ * on a POST with no body.
  */
-export function webBillingRequest(): RequestInit {
-  return {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ source: "web" }),
-  };
+export function webBillingRequest(path: string): { path: string; init: RequestInit } {
+  return { path: `${path}?source=web`, init: { method: "POST" } };
 }
 
-async function startBillingSession(path: string): Promise<string> {
-  const { url } = await request<{ url: string }>(path, webBillingRequest());
+async function startBillingSession(route: string): Promise<string> {
+  const { path, init } = webBillingRequest(route);
+  const { url } = await request<{ url: string }>(path, init);
   return url;
 }
 

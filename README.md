@@ -62,8 +62,8 @@ Everything goes through `src/api.ts`.
   the ticket is single-use, so a dropped stream asks for a new one)
 - `POST /billing/checkout`, `POST /billing/portal`: each returns `{url}` and the
   browser is sent there. `webBillingRequest()` in `src/api.ts` is the one place
-  that marks these requests as coming from the dashboard (a JSON body of
-  `{"source": "web"}`), so Stripe returns to `/#/membership` here.
+  that marks these requests as coming from the dashboard (a `?source=web`
+  query parameter, no body), so Stripe returns to `/#/membership` here.
 
 A `401` from any call while signed in drops back to the sign-in screen, which
 returns the user to the page they were on.

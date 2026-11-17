@@ -13,7 +13,8 @@ const LOGIN_ERRORS: Record<string, string> = {
     "The sign-in took too long or was started in another tab. Sign in again.",
   github_denied: "GitHub sign-in was cancelled. Nothing was changed.",
   github_unavailable: "GitHub did not answer. Wait a moment and sign in again.",
-  not_allowed: "This GitHub account isn't on the beta list yet.",
+  not_allowed:
+    "This GitHub account doesn't have access yet. It may not be on the beta list, or it is still waiting for approval.",
   not_configured:
     "Sign-in with GitHub isn't set up on the server yet. Use `mrg login` from the CLI for now.",
 };

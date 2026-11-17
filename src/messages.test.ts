@@ -11,7 +11,7 @@ describe("explainLoginError", () => {
   });
 
   it("points only the beta-list error at the signup", () => {
-    expect(explainLoginError("not_allowed")).toMatch(/beta list/);
+    expect(explainLoginError("not_allowed")).toMatch(/doesn't have access yet/);
     expect(isBetaListError("not_allowed")).toBe(true);
     expect(isBetaListError("github_denied")).toBe(false);
   });
