@@ -37,11 +37,16 @@ export function statusTone(status: string): "good" | "bad" | "live" | "plain" {
       return "bad";
     case "running":
     case "queued":
+    case "building":
+    case "waiting":
+    case "flashing":
       return "live";
     default:
       return "plain";
   }
 }
+
+export const isInFlight = (status: string) => status === "queued" || status === "running";
 
 export const isFinished = (status: string) =>
   status === "complete" || status === "failed" || status === "cancelled";

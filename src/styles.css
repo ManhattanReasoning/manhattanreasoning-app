@@ -399,3 +399,17 @@ h2 { font-size: 1.02rem; letter-spacing: -0.005em; margin-bottom: 12px; }
     border-left: 2px solid #dcd9cf;
   }
 }
+
+/* Live / History tabs */
+.view-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 14px; }
+.view-tab { background: none; border: 0; border-bottom: 2px solid transparent; padding: 8px 12px; font: inherit; color: var(--ink-2); cursor: pointer; margin-bottom: -1px; }
+.view-tab:hover { color: var(--ink); }
+.view-tab-on { color: var(--ink); border-bottom-color: var(--accent); font-weight: 600; }
+.view-tab-count { color: var(--ink-3); font-weight: 400; margin-left: 2px; }
+
+/* Cancel build */
+.cancel { display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.cancel-confirm { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.btn-danger { color: var(--bad); border-color: #efc6c1; }
+.btn-danger:hover:not(:disabled) { border-color: var(--bad); }
+.cancel-error { color: var(--bad); font-size: 0.9rem; }

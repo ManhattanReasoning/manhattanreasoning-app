@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import type { RecentBuild } from "../api";
 import { formatWhen, shortId } from "../format";
-import { StatusBadge } from "./Bits";
+import { RowStatus } from "./Phase";
 
 export function BuildsTable({ builds }: { builds: RecentBuild[] }) {
   return (
@@ -31,7 +31,7 @@ export function BuildsTable({ builds }: { builds: RecentBuild[] }) {
                 {b.project ? <span className="dim build-project">{b.project}</span> : null}
               </th>
               <td>
-                <StatusBadge status={b.status} label={b.status_display} />
+                <RowStatus build={b} />
               </td>
               <td title={formatWhen(b.submitted_at)}>
                 {b.relative_time ?? formatWhen(b.submitted_at)}

@@ -1,26 +1,23 @@
-import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { getJob } from "../api";
-import { Loading, LoadError, StatusBadge } from "../components/Bits";
+import { Loading, LoadError } from "../components/Bits";
+import { CancelButton, PhaseBadge } from "../components/Phase";
 import { Logs } from "../components/Logs";
 import { Pipeline } from "../components/Pipeline";
 import { formatWhen, isFinished } from "../format";
+import { buildPhase, canCancel } from "../phase";
 import { useResource } from "../useResource";
 
 const POLL_MS = 4000;
 
 export function BuildDetail() {
   const { jobId = "" } = useParams();
-  const job = useResource(() => getJob(jobId), jobId);
+  // While the build is in flight, keep the stages and timings current (paused while the tab is hidden).
+  const job = useResource(() => getJob(jobId), jobId, {
+    refreshMs: (d) => (d && !isFinished(d.status) ? POLL_MS : 0),
+  });
   const { data, reload } = job;
-  const live = data ? !isFinished(data.status) : false;
-
-  // While the build is in flight, keep the stages and timings current.
-  useEffect(() => {
-    if (!live) return;
-    const timer = window.setInterval(() => void reload(), POLL_MS);
-    return () => window.clearInterval(timer);
-  }, [live, reload]);
+  const phase = data ? buildPhase(data.status, data.pipeline) : "";
 
   return (
     <>
@@ -31,7 +28,8 @@ export function BuildDetail() {
         <>
           <div className="detail-head">
             <h1 className="page-title">{data.name}</h1>
-            <StatusBadge status={data.status} label={data.status_display} />
+            <PhaseBadge status={data.status} statusDisplay={data.status_display} pipeline={data.pipeline} />
+            {canCancel(phase) ? <CancelButton jobId={data.job_id} onDone={() => void reload()} /> : null}
           </div>
           <p className="mono dim job-id">{data.job_id}</p>
 

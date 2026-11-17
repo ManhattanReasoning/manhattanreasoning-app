@@ -3,13 +3,13 @@ import { getOverview, getProjects } from "../api";
 import { Empty, Loading, LoadError, StatusBadge } from "../components/Bits";
 import { BuildsTable } from "../components/BuildsTable";
 import { formatWhen } from "../format";
-import { useResource } from "../useResource";
+import { listRefreshMs, useResource } from "../useResource";
 
 const RECENT_LIMIT = 50; // the most the API returns in one call
 
 export function Builds() {
   const projects = useResource(getProjects);
-  const recent = useResource(() => getOverview(RECENT_LIMIT));
+  const recent = useResource(() => getOverview(RECENT_LIMIT), "", { refreshMs: listRefreshMs });
 
   return (
     <>
