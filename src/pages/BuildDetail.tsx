@@ -100,8 +100,10 @@ export function BuildDetail() {
             </div>
           </div>
 
-          <section className="panel" aria-labelledby="pipe-h">
-            <h2 id="pipe-h">Build pipeline</h2>
+          <section className="pipeline-section" aria-labelledby="pipe-h">
+            <h2 id="pipe-h" className="visually-hidden">
+              Pipeline
+            </h2>
             <Pipeline stages={data.pipeline} />
           </section>
 

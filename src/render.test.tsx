@@ -10,7 +10,7 @@ import { Pipeline } from "./components/Pipeline";
 import { UsageMeter } from "./components/UsageMeter";
 
 describe("rendering", () => {
-  it("draws one numbered step per pipeline stage, with the stage's state and time", () => {
+  it("draws one via per pipeline stage and one wire between each pair", () => {
     const ids = ["synthesis", "place_and_route", "bitstream", "flash_to_board", "run"];
     const statuses = ["completed", "completed", "running", "pending", "pending"] as const;
     const stages: PipelineStage[] = ids.map((id, i) => ({
@@ -18,13 +18,13 @@ describe("rendering", () => {
       name: id,
       status: statuses[i],
       duration_seconds: i < 2 ? 61 : null,
-      duration_formatted: i < 2 ? "1:01" : null,
+      duration_formatted: i < 2 ? "1m 1s" : null,
     }));
     const html = renderToString(<Pipeline stages={stages} />);
-    expect(html.match(/class="step /g)).toHaveLength(5);
-    expect(html).toContain("step-running");
-    expect(html).toMatch(/done(<!-- -->)? · 1:01/);
-    expect(html).toContain("✓");
+    expect(html.match(/class="via"/g)).toHaveLength(5);
+    expect(html.match(/<path/g)).toHaveLength(4);
+    expect(html).toContain("wire-running");
+    expect(html).toContain("1m 1s");
   });
 
   it("links each build to its detail page", () => {
