@@ -34,50 +34,57 @@ export function App({ loginError }: { loginError: string | null }) {
       <a className="skip" href="#main">
         Skip to content
       </a>
-      <header className="top">
-        <div className="top-inner">
-          <Link to="/" className="brand" aria-label="Manhattan Reasoning dashboard">
-            <Logo />
-          </Link>
-          <nav className="tabs" aria-label="Dashboard">
-            <NavLink to="/" end>
-              Overview
-            </NavLink>
-            <NavLink to="/builds">Builds</NavLink>
-            <NavLink to="/membership">Membership</NavLink>
-          </nav>
-          <div className="who">
-            <span className="mono who-name" title="Signed in as">
-              {who}
-            </span>
-            <button type="button" className="btn btn-quiet" onClick={() => void signOut()}>
-              Sign out
-            </button>
-          </div>
+      <header className="topbar">
+        <Link to="/" aria-label="Manhattan Reasoning dashboard, Overview">
+          <Logo />
+        </Link>
+        <div className="spacer" />
+        <div className="who">
+          <span className="mono who-name" title="Signed in as">
+            {who}
+          </span>
+          <button type="button" className="btn btn-quiet" onClick={() => void signOut()}>
+            Sign out
+          </button>
         </div>
       </header>
-      <main className="page" id="main">
-        <Routes>
-          <Route path="/" element={<Overview />} />
-          <Route path="/builds" element={<Builds />} />
-          <Route path="/builds/:jobId" element={<BuildDetail />} />
-          <Route path="/membership" element={<Membership />} />
-          <Route
-            path="*"
-            element={
-              <div className="state state-empty">
-                <p>There is no page here.</p>
-                <Link to="/">Go to the overview</Link>
-              </div>
-            }
-          />
-        </Routes>
-      </main>
-      <footer className="foot">
-        <a href="https://docs.manhattanreasoning.com">Docs</a>
-        <a href="https://manhattanreasoning.com">manhattanreasoning.com</a>
-        <a href="mailto:hello@manhattanreasoning.com">hello@manhattanreasoning.com</a>
-      </footer>
+      <div className="shell">
+        <nav className="sidebar" aria-label="Dashboard">
+          <NavLink to="/" end className="side-link">
+            Overview
+          </NavLink>
+          <NavLink to="/builds" className="side-link">
+            Builds
+          </NavLink>
+          <NavLink to="/membership" className="side-link">
+            Membership
+          </NavLink>
+        </nav>
+        <div className="shell-main">
+          <main className="page" id="main">
+            <Routes>
+              <Route path="/" element={<Overview />} />
+              <Route path="/builds" element={<Builds />} />
+              <Route path="/builds/:jobId" element={<BuildDetail />} />
+              <Route path="/membership" element={<Membership />} />
+              <Route
+                path="*"
+                element={
+                  <div className="state state-empty">
+                    <p>There is no page here.</p>
+                    <Link to="/">Go to the overview</Link>
+                  </div>
+                }
+              />
+            </Routes>
+          </main>
+          <footer className="foot">
+            <a href="https://docs.manhattanreasoning.com">Docs</a>
+            <a href="https://manhattanreasoning.com">manhattanreasoning.com</a>
+            <a href="mailto:hello@manhattanreasoning.com">hello@manhattanreasoning.com</a>
+          </footer>
+        </div>
+      </div>
     </>
   );
 }
