@@ -17,7 +17,7 @@ export function Landing({ loginError, expired }: { loginError: string | null; ex
   return (
     <main className="landing">
       <div className="landing-card">
-        <Logo />
+        <Logo withName />
         <h1>Your builds, usage and membership.</h1>
         <p className="lede">
           Sign in with the GitHub account you use for <code>mrg login</code>.

@@ -78,8 +78,9 @@ export function Logs({ jobId, onDone }: { jobId: string; onDone?: () => void }) 
   return (
     <section className="terminal" aria-label="Build log">
       <header className="terminal-head">
-        <span className="terminal-title">build log</span>
+        <span className="terminal-title">Build logs</span>
         <span className={`terminal-state terminal-${phase}`} role="status">
+          {phase === "live" ? <span className="live-dot" aria-hidden="true" /> : null}
           {statusText}
         </span>
       </header>

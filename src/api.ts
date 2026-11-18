@@ -193,6 +193,13 @@ export const getProjects = () => request<Project[]>("/dashboard/projects");
 export const getJob = (jobId: string) =>
   request<JobDetail>(`/dashboard/jobs/${encodeURIComponent(jobId)}`);
 
+/**
+ * Cancel a build. 204 on success; 404 if it is not yours or does not exist; 409 if it can
+ * no longer be cancelled (already finished, or flashing the board).
+ */
+export const cancelJob = (jobId: string) =>
+  request<void>(`/jobs/${encodeURIComponent(jobId)}`, { method: "DELETE" });
+
 /** Where the browser goes to start GitHub sign-in; the API redirects back. */
 export function signInUrl(returnTo: string): string {
   return `${API_URL}/auth/github/login?return_to=${encodeURIComponent(returnTo)}`;

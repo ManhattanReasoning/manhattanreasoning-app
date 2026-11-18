@@ -3,16 +3,12 @@ import { ApiError } from "../api";
 import { statusTone } from "../format";
 import { explainError } from "../messages";
 
-/** The two-line text logo from the marketing site, as live text. */
-export function Logo() {
+/** The turnstile mark (⊢), optionally with the company name beside it. */
+export function Logo({ withName = false }: { withName?: boolean }) {
   return (
-    <span className="logo" aria-hidden="true">
-      <span className="logo-l1">
-        Manhattan <span className="op">&rarr;</span> Reasoning,
-      </span>
-      <span className="logo-l2">
-        Manhattan <span className="op">&#8866;</span> Reasoning
-      </span>
+    <span className="brand">
+      <img className="logo-img" src="/logo.png" alt={withName ? "" : "Manhattan Reasoning"} />
+      {withName ? <span>Manhattan Reasoning</span> : null}
     </span>
   );
 }
