@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { getProjects } from "../api";
 import { Empty, Loading, LoadError, StatusBadge } from "../components/Bits";
-import { formatWhen } from "../format";
+import { formatWhen, statusTone } from "../format";
 import { useResource } from "../useResource";
 
 const REFRESH_MS = 30000;
@@ -23,7 +23,11 @@ export function Projects() {
                     {p.build_count} builds · last run {p.latest_build_relative}
                   </div>
                 </div>
-                {p.latest_build_status ? <StatusBadge status={p.latest_build_status} label={p.latest_build_status} /> : null}
+                {p.latest_build_status ? <StatusBadge
+                    status={p.latest_build_status}
+                    // The API says "Passed"; every other page says "Complete".
+                    label={statusTone(p.latest_build_status) === "good" ? "Complete" : p.latest_build_status}
+                  /> : null}
               </div>
             </Link>
           ))

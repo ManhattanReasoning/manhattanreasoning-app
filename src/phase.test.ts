@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { PipelineStage, StageStatus } from "./api";
-import { buildPhase, canCancel } from "./phase";
+import { buildPhase, canCancel, failedWhileFlashing } from "./phase";
 
 const ids = ["synthesis", "place_and_route", "bitstream", "flash_to_board", "run"];
 const stages = (...s: StageStatus[]): PipelineStage[] =>
@@ -32,9 +32,18 @@ describe("buildPhase", () => {
 describe("canCancel", () => {
   it("refuses while flashing and once finished", () => {
     expect(canCancel("flashing")).toBe(false);
+    expect(canCancel("running")).toBe(false);
     expect(canCancel("complete")).toBe(false);
     expect(canCancel("queued")).toBe(true);
     expect(canCancel("building")).toBe(true);
     expect(canCancel("waiting")).toBe(true);
+  });
+});
+
+describe("failedWhileFlashing", () => {
+  it("is true only when the flash stage failed", () => {
+    expect(failedWhileFlashing(stages("completed", "completed", "completed", "failed", "queued"))).toBe(true);
+    expect(failedWhileFlashing(stages("completed", "failed", "queued", "queued", "queued"))).toBe(false);
+    expect(failedWhileFlashing(undefined)).toBe(false);
   });
 });

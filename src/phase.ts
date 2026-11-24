@@ -32,5 +32,12 @@ export const PHASE_LABEL: Record<string, string> = {
   cancelled: "Cancelled",
 };
 
-/** A flashing build is refused by the API with a 409, so the UI does not offer Cancel. */
-export const canCancel = (phase: Phase) => ["queued", "building", "waiting", "running"].includes(phase);
+/**
+ * The API refuses (409) to cancel a build that is flashing or already running on the board, so
+ * the UI only offers Cancel before the board is involved.
+ */
+export const canCancel = (phase: Phase) => ["queued", "building", "waiting"].includes(phase);
+
+/** True when the build itself worked and the failure came while flashing it to the board. */
+export const failedWhileFlashing = (pipeline: PipelineStage[] | undefined) =>
+  (pipeline ?? []).some((s) => s.id === "flash_to_board" && s.status === "failed");

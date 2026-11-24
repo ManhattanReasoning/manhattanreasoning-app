@@ -6,13 +6,13 @@ import { Logs } from "../components/Logs";
 import { PhaseBadge } from "../components/Phase";
 import { Pipeline } from "../components/Pipeline";
 import { boardName, formatWhen, isFinished, shortId } from "../format";
-import { buildPhase, canCancel } from "../phase";
+import { buildPhase, canCancel, failedWhileFlashing } from "../phase";
 import { useResource } from "../useResource";
 
 const POLL_MS = 4000;
 
 /** One line saying what the build is doing, in plain words. */
-function describe(phase: string, board: string): string {
+function describe(phase: string, board: string, flashFailed: boolean): string {
   switch (phase) {
     case "queued":
       return "Waiting for a build slot";
@@ -25,7 +25,9 @@ function describe(phase: string, board: string): string {
     case "running":
       return `Running on ${board}`;
     case "failed":
-      return "Failed during the build, never ran on a board";
+      return flashFailed
+        ? `The build worked, but flashing ${board} failed. The design never ran`
+        : "Failed during the build, never ran on a board";
     case "cancelled":
       return "Cancelled";
     default:
@@ -72,7 +74,7 @@ export function BuildDetail() {
             {canCancel(phase) ? <CancelButton jobId={data.job_id} onDone={() => void reload()} /> : null}
           </div>
           <p className="sub">
-            {describe(phase, board)} · submitted by {data.submitted_by} · {data.relative_time ?? ""}{" "}
+            {describe(phase, board, failedWhileFlashing(data.pipeline))} · submitted by {data.submitted_by} · {data.relative_time ?? ""}{" "}
             ({data.submitted_at_formatted ?? formatWhen(data.submitted_at)})
           </p>
 

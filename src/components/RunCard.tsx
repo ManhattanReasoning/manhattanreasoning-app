@@ -8,8 +8,9 @@ import { PhasePill, useLivePhase } from "./Phase";
 
 export function cancelMessage(err: unknown): string {
   if (err instanceof ApiError && err.status === 409) {
-    return "This build can no longer be cancelled. It may have just finished, or it is flashing the board.";
+    return "This build can no longer be cancelled. It may have just finished, or it is on the board.";
   }
+  if (err instanceof ApiError && err.status === 403) return "You can only cancel your own builds.";
   if (err instanceof ApiError && err.status === 404) return "That build no longer exists.";
   return err instanceof Error ? err.message : "Could not cancel the build.";
 }

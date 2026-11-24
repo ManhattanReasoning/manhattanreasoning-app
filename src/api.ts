@@ -194,8 +194,9 @@ export const getJob = (jobId: string) =>
   request<JobDetail>(`/dashboard/jobs/${encodeURIComponent(jobId)}`);
 
 /**
- * Cancel a build. 204 on success; 404 if it is not yours or does not exist; 409 if it can
- * no longer be cancelled (already finished, or flashing the board).
+ * Cancel a build. 204 on success; 403 (not_job_owner) if it is someone else's build, which an
+ * admin can open; 404 if it does not exist; 409 if it can no longer be cancelled (already
+ * finished, flashing the board, or running on it).
  */
 export const cancelJob = (jobId: string) =>
   request<void>(`/jobs/${encodeURIComponent(jobId)}`, { method: "DELETE" });

@@ -81,6 +81,11 @@ export function Builds() {
         ) : (
           <Empty>
             <p>No builds match these filters.</p>
+            {all.length >= RECENT_LIMIT ? (
+              <p className="dim small">
+                Only your latest {RECENT_LIMIT} builds are loaded, so older builds are not searched.
+              </p>
+            ) : null}
           </Empty>
         )
       ) : recent.loading ? (

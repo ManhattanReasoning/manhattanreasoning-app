@@ -2,10 +2,10 @@
 import { renderToString } from "react-dom/server";
 import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it } from "vitest";
-import type { PipelineStage, RecentBuild } from "./api";
+import { ApiError, type PipelineStage, type RecentBuild } from "./api";
 import { Account, Avatar } from "./components/Account";
 import { BuildsTable } from "./components/BuildsTable";
-import { RunCard } from "./components/RunCard";
+import { cancelMessage, RunCard } from "./components/RunCard";
 import { Pipeline } from "./components/Pipeline";
 import { UsageMeter } from "./components/UsageMeter";
 
@@ -107,5 +107,13 @@ describe("rendering", () => {
     );
     expect(html).toContain('aria-label="Account: octocat"');
     expect(html).toContain("Notifications (coming soon)");
+  });
+});
+
+describe("cancelMessage", () => {
+  it("explains each refusal from the API", () => {
+    expect(cancelMessage(new ApiError(403, "not_job_owner", "x"))).toBe("You can only cancel your own builds.");
+    expect(cancelMessage(new ApiError(409, "conflict", "x"))).toMatch(/no longer be cancelled/);
+    expect(cancelMessage(new ApiError(404, "not_found", "x"))).toBe("That build no longer exists.");
   });
 });
