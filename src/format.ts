@@ -53,3 +53,24 @@ export const isInFlight = (status: string) => status === "queued" || status === 
 
 export const isFinished = (status: string) =>
   status === "complete" || status === "failed" || status === "cancelled";
+
+/** 5400 → "1h 30m", 90 → "1m 30s", 12 → "12s"; "—" when unknown. */
+export function formatSeconds(s: number | null | undefined): string {
+  if (s == null) return "—";
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = Math.round(s % 60);
+  if (h > 0) return `${h}h ${m}m`;
+  if (m > 0) return `${m}m ${sec}s`;
+  return `${sec}s`;
+}
+
+/** The build step the backend reports ("build_gateware/nextpnr-ecp5") as a label people know. */
+export function stageLabel(stage: string): string {
+  if (stage.includes("yosys")) return "Synthesis";
+  if (stage.includes("nextpnr")) return "Place & route";
+  if (stage.includes("ecppack")) return "Bitstream";
+  if (stage === "flash") return "Flashing";
+  if (stage === "build") return "Build (step unknown)";
+  return stage;
+}

@@ -7,6 +7,7 @@ import { PhaseBadge } from "../components/Phase";
 import { Pipeline } from "../components/Pipeline";
 import { boardName, formatWhen, isFinished, shortId } from "../format";
 import { buildPhase, canCancel, failedWhileFlashing } from "../phase";
+import { useSession } from "../session";
 import { useResource } from "../useResource";
 
 const POLL_MS = 4000;
@@ -37,6 +38,7 @@ function describe(phase: string, board: string, flashFailed: boolean): string {
 
 export function BuildDetail() {
   const { jobId = "" } = useParams();
+  const { state: session } = useSession();
   // While the build is in flight, keep the stages and timings current (paused while the tab is hidden).
   const job = useResource(() => getJob(jobId), jobId, {
     refreshMs: (d) => (d && !isFinished(d.status) ? POLL_MS : 0),
@@ -50,6 +52,9 @@ export function BuildDetail() {
   const phase = data ? buildPhase(data.status, data.pipeline) : "";
   const board = data ? boardName(data.board_id ?? data.fpga_id) : "—";
   const live = data ? !isFinished(data.status) : false;
+  // An admin can open anyone's build, but the API only lets the owner cancel it (403 otherwise).
+  const names = session.phase === "signedIn" ? [session.profile.username, session.profile.github_username] : [];
+  const mine = !data?.submitted_by || names.includes(data.submitted_by);
 
   return (
     <>
@@ -71,7 +76,7 @@ export function BuildDetail() {
             <span className="dim mono">#{shortId(data.job_id)}</span>
             <PhaseBadge status={data.status} statusDisplay={data.status_display} pipeline={data.pipeline} />
             <span className="spacer" />
-            {canCancel(phase) ? <CancelButton jobId={data.job_id} onDone={() => void reload()} /> : null}
+            {canCancel(phase) && mine ? <CancelButton jobId={data.job_id} onDone={() => void reload()} /> : null}
           </div>
           <p className="sub">
             {describe(phase, board, failedWhileFlashing(data.pipeline))} · submitted by {data.submitted_by} · {data.relative_time ?? ""}{" "}

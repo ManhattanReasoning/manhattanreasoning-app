@@ -60,3 +60,38 @@ export function Notice({
     </div>
   );
 }
+
+/** The state of a board or a user, as a badge. Unknown states fall back to plain. */
+export function StateBadge({ state }: { state: string }) {
+  const tone: Record<string, string> = {
+    idle: "good",
+    active: "good",
+    programming: "live",
+    reserved: "live",
+    dirty: "plain",
+    pending: "plain",
+    suspended: "bad",
+    rejected: "bad",
+    error: "bad",
+    offline: "bad",
+  };
+  const label = state.charAt(0).toUpperCase() + state.slice(1).replace(/_/g, " ");
+  return (
+    <span className={`badge badge-${tone[state] ?? "plain"}`}>
+      <span className="badge-dot" aria-hidden="true" />
+      {label}
+    </span>
+  );
+}
+
+/** "Show more" under a paged list. */
+export function MoreButton({ hasMore, busy, onMore }: { hasMore: boolean; busy: boolean; onMore: () => void }) {
+  if (!hasMore) return null;
+  return (
+    <p className="more">
+      <button type="button" className="btn" onClick={onMore} disabled={busy}>
+        {busy ? "Loading…" : "Load older"}
+      </button>
+    </p>
+  );
+}

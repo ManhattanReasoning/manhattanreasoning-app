@@ -267,3 +267,155 @@ export async function openLogStream(
   };
   return close;
 }
+
+// ---------------------------------------------------------------- admin (read-only)
+// Shapes from docs/reference/admin-api.md in the cloud repo. Every call needs an admin
+// sign-in: a signed-in non-admin gets 403 `not_admin`. Times are ISO 8601 UTC; null means unknown.
+
+export interface AdminPage<T> {
+  items: T[];
+  next_cursor: string | null;
+}
+
+export interface AdminOverview {
+  generated_at: string;
+  boards: { total: number; by_state: Record<string, number> };
+  attention: {
+    boards_in_error: { fpga_id: number; since: string | null; reason: string | null }[];
+    pending_applications: number;
+  };
+  last_7_days: {
+    active_users: number;
+    builds: number;
+    failed: number;
+    failure_rate: number | null;
+    build_minutes: number;
+    cost_estimate_usd: number;
+    board_seconds: number | null;
+  };
+  builds_per_day: { day: string; complete: number; failed: number; cancelled: number; in_progress: number }[];
+  failures_by_stage: { stage: string; count: number }[];
+  top_users_this_month: { username: string; build_minutes: number; builds: number }[];
+}
+
+export interface AdminSession {
+  session_id: string;
+  owner: string;
+  created_at: string | null;
+  expires_at: string | null;
+  idle_expires_at: string | null;
+  max_expires_at: string | null;
+  ended_at: string | null;
+  end_reason: string | null;
+}
+
+export interface AdminBoard {
+  fpga_id: number;
+  state: string;
+  state_since: string | null;
+  owner: string | null;
+  session: AdminSession | null;
+  current_job_id: string | null;
+  current_job_created_at: string | null;
+  jtag_present: boolean | null;
+  network_up: boolean | null;
+  last_error: { at: string | null; reason: string | null } | null;
+}
+
+export interface AdminBoardEvent {
+  id: number;
+  fpga_id: number;
+  at: string;
+  from_state: string | null;
+  to_state: string;
+  actor: string;
+  reason: string | null;
+}
+
+export interface AdminBuild {
+  job_id: string;
+  owner: string;
+  project: string | null;
+  command: string | null;
+  filename: string | null;
+  status: string;
+  display_status: string;
+  fpga_id: number | null;
+  failed_stage: string | null;
+  error: string | null;
+  created_at: string;
+  build_started_at: string | null;
+  build_finished_at: string | null;
+  finished_at: string | null;
+  build_seconds: number | null;
+  total_seconds: number | null;
+  board_seconds: number | null;
+}
+
+export interface AdminUser {
+  username: string;
+  full_name: string | null;
+  email: string | null;
+  affiliation: string | null;
+  intended_use: string | null;
+  status: string;
+  applied_at: string | null;
+  approved_by: string | null;
+  approved_at: string | null;
+  max_concurrent_boards: number;
+  max_session_minutes: number;
+  quota_used_minutes: number;
+  quota_limit_minutes: number;
+  builds: number;
+  last_build_at: string | null;
+  boards_held: number[];
+}
+
+export interface AdminUserPage extends AdminPage<AdminUser> {
+  counts: Record<string, number>;
+}
+
+export interface AdminActivity {
+  at: string;
+  source: string;
+  actor: string;
+  actor_type: string;
+  action: string;
+  target_type: string;
+  target: string;
+  from_state: string | null;
+  to_state: string | null;
+  reason: string | null;
+}
+
+function query(params: Record<string, string | number | undefined | null>): string {
+  const q = new URLSearchParams();
+  for (const [k, v] of Object.entries(params)) if (v !== undefined && v !== null && v !== "") q.set(k, String(v));
+  const s = q.toString();
+  return s ? `?${s}` : "";
+}
+
+export const getAdminOverview = () => request<AdminOverview>("/admin/overview");
+export const getAdminBoards = () => request<{ items: AdminBoard[] }>("/admin/boards");
+export const getAdminBoardEvents = (fpgaId: number, cursor?: string | null) =>
+  request<AdminPage<AdminBoardEvent>>(`/admin/boards/${fpgaId}/events${query({ limit: 20, cursor })}`);
+export const getAdminBuilds = (f: { status?: string; user?: string; fpga_id?: string; cursor?: string | null }) =>
+  request<AdminPage<AdminBuild>>(`/admin/builds${query({ limit: 50, ...f })}`);
+export const getAdminUsers = (f: { status?: string; cursor?: string | null }) =>
+  request<AdminUserPage>(`/admin/users${query({ limit: 50, ...f })}`);
+export const getAdminActivity = (f: { actor_type?: string; cursor?: string | null }) =>
+  request<AdminPage<AdminActivity>>(`/admin/activity${query({ limit: 50, ...f })}`);
+
+/**
+ * Is the signed-in user an admin? The API has no flag for it: a non-admin gets 403 `not_admin`
+ * from any /admin call, which is what the admin API doc says the app should use to hide the pages.
+ * Any other failure (offline, 5xx) counts as "not an admin" so the normal dashboard never breaks.
+ */
+export async function probeAdmin(): Promise<boolean> {
+  try {
+    await request<unknown>("/admin/users?limit=1");
+    return true;
+  } catch {
+    return false;
+  }
+}

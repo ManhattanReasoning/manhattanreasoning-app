@@ -8,6 +8,7 @@ import { BuildsTable } from "./components/BuildsTable";
 import { cancelMessage, RunCard } from "./components/RunCard";
 import { Pipeline } from "./components/Pipeline";
 import { UsageMeter } from "./components/UsageMeter";
+import { formatSeconds, stageLabel } from "./format";
 
 describe("rendering", () => {
   it("draws one via per pipeline stage and one wire between each pair", () => {
@@ -115,5 +116,21 @@ describe("cancelMessage", () => {
     expect(cancelMessage(new ApiError(403, "not_job_owner", "x"))).toBe("You can only cancel your own builds.");
     expect(cancelMessage(new ApiError(409, "conflict", "x"))).toMatch(/no longer be cancelled/);
     expect(cancelMessage(new ApiError(404, "not_found", "x"))).toBe("That build no longer exists.");
+  });
+});
+
+describe("admin helpers", () => {
+  it("names the build step people know from the backend's stage", () => {
+    expect(stageLabel("build_gateware/yosys")).toBe("Synthesis");
+    expect(stageLabel("build_gateware/nextpnr-ecp5")).toBe("Place & route");
+    expect(stageLabel("build_gateware/ecppack")).toBe("Bitstream");
+    expect(stageLabel("flash")).toBe("Flashing");
+    expect(stageLabel("build")).toBe("Build (step unknown)");
+  });
+  it("formats durations and unknowns", () => {
+    expect(formatSeconds(5400)).toBe("1h 30m");
+    expect(formatSeconds(90)).toBe("1m 30s");
+    expect(formatSeconds(12)).toBe("12s");
+    expect(formatSeconds(null)).toBe("—");
   });
 });
