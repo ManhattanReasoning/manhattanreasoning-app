@@ -495,7 +495,6 @@ select {
 .pipeline-section { margin: 0 0 16px; }
 
 /* ---- admin pages ---- */
-.side-heading { margin: 18px 10px 4px; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); }
 .section-h { font-size: 15px; font-weight: 600; margin: 24px 0 10px; }
 .two-col { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; }
 .attn, .plain-list { list-style: none; margin: 0; padding: 0; }
@@ -526,3 +525,4 @@ select {
 .tiles-6 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
 @media (max-width: 1100px) { .tiles-6 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 760px) { .tiles-6 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.admin-tag { font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--accent-ink); background: rgba(37, 99, 235, 0.09); border-radius: 6px; padding: 3px 8px; }

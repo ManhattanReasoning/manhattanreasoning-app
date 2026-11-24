@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import type { Profile } from "../api";
 
@@ -31,7 +32,16 @@ export function Avatar({ githubUsername, fallbackName }: { githubUsername: strin
 }
 
 /** Notification placeholder and the account menu (who is signed in, sign out). */
-export function Account({ profile, onSignOut }: { profile: Profile; onSignOut: () => void }) {
+export function Account({
+  profile,
+  onSignOut,
+  switchView,
+}: {
+  profile: Profile;
+  onSignOut: () => void;
+  /** Admins only: where the "switch view" item goes (the admin or the user side of the app). */
+  switchView?: { to: string; label: string };
+}) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const name = profile.github_username ?? profile.username;
@@ -75,6 +85,11 @@ export function Account({ profile, onSignOut }: { profile: Profile; onSignOut: (
           <p className="menu-who">
             Signed in as <strong className="mono">{name}</strong>
           </p>
+          {switchView ? (
+            <Link to={switchView.to} role="menuitem" onClick={() => setOpen(false)}>
+              {switchView.label}
+            </Link>
+          ) : null}
           <button type="button" role="menuitem" onClick={onSignOut}>
             Sign out
           </button>

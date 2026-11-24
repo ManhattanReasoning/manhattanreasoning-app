@@ -1,4 +1,4 @@
-import { NavLink, Link, Route, Routes } from "react-router-dom";
+import { NavLink, Link, Route, Routes, useLocation } from "react-router-dom";
 import { AdminOnly, AdminProvider, useIsAdmin } from "./admin";
 import { Account } from "./components/Account";
 import { Loading, LoadError, Logo } from "./components/Bits";
@@ -13,20 +13,53 @@ import { AdminBuilds } from "./pages/admin/AdminBuilds";
 import { AdminOverview } from "./pages/admin/AdminOverview";
 import { AdminUsers } from "./pages/admin/AdminUsers";
 import { Projects } from "./pages/Projects";
+import type { Profile } from "./api";
 import { useSession } from "./session";
 
-/** The admin links, shown only once the API has said this sign-in is an admin. */
-function AdminNav() {
-  if (!useIsAdmin()) return null;
-  return (
-    <>
-      <span className="side-heading">Admin</span>
+/** Admin mode is the /admin part of the app; only an admin can be in it. */
+function useAdminMode(): boolean {
+  const isAdmin = useIsAdmin();
+  return isAdmin === true && useLocation().pathname.startsWith("/admin");
+}
+
+/** A quiet marker in the top bar so nobody mistakes the admin view for their own dashboard. */
+function AdminTag() {
+  return useAdminMode() ? <span className="admin-tag">Admin</span> : null;
+}
+
+/** The account menu; admins get a "switch view" item in it. */
+function TopbarAccount({ profile, onSignOut }: { profile: Profile; onSignOut: () => void }) {
+  const isAdmin = useIsAdmin();
+  const admin = useAdminMode();
+  const switchView = isAdmin
+    ? admin
+      ? { to: "/", label: "Switch to user view" }
+      : { to: "/admin", label: "Switch to admin view" }
+    : undefined;
+  return <Account profile={profile} onSignOut={onSignOut} switchView={switchView} />;
+}
+
+function SideNav() {
+  const admin = useAdminMode();
+  return admin ? (
+    <nav className="sidebar" aria-label="Admin">
       <NavLink to="/admin" end className="side-link">Overview</NavLink>
       <NavLink to="/admin/boards" className="side-link">Boards</NavLink>
       <NavLink to="/admin/builds" className="side-link">All builds</NavLink>
       <NavLink to="/admin/users" className="side-link">Users</NavLink>
       <NavLink to="/admin/activity" className="side-link">Activity</NavLink>
-    </>
+    </nav>
+  ) : (
+    <nav className="sidebar" aria-label="Dashboard">
+      <NavLink to="/" end className="side-link">Overview</NavLink>
+      <NavLink to="/projects" className="side-link">Projects</NavLink>
+      <NavLink to="/builds" className="side-link">Builds</NavLink>
+      <NavLink to="/membership" className="side-link">Membership</NavLink>
+      <span className="side-link side-stub" aria-disabled="true" title="Coming soon">
+        Secrets
+        <span className="soon">soon</span>
+      </span>
+    </nav>
   );
 }
 
@@ -62,29 +95,12 @@ export function App({ loginError }: { loginError: string | null }) {
           <Logo />
         </Link>
         <span className="ws">{who}</span>
+        <AdminTag />
         <div className="spacer" />
-        <Account profile={state.profile} onSignOut={() => void signOut()} />
+        <TopbarAccount profile={state.profile} onSignOut={() => void signOut()} />
       </header>
       <div className="shell">
-        <nav className="sidebar" aria-label="Dashboard">
-          <NavLink to="/" end className="side-link">
-            Overview
-          </NavLink>
-          <NavLink to="/projects" className="side-link">
-            Projects
-          </NavLink>
-          <NavLink to="/builds" className="side-link">
-            Builds
-          </NavLink>
-          <NavLink to="/membership" className="side-link">
-            Membership
-          </NavLink>
-          <span className="side-link side-stub" aria-disabled="true" title="Coming soon">
-            Secrets
-            <span className="soon">soon</span>
-          </span>
-          <AdminNav />
-        </nav>
+        <SideNav />
         <div className="shell-main">
           <main className="page" id="main">
             <Routes>
