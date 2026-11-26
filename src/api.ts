@@ -110,7 +110,8 @@ export interface RecentBuild {
   relative_time: string | null;
   duration_seconds: number | null;
   duration_formatted: string | null;
-  board_id: string | null;
+  /** Admin-only. The user dashboard never shows which board a build ran on. */
+  board_id?: string | null;
   command: string | null;
 }
 
@@ -156,8 +157,11 @@ export interface JobDetail {
   name: string;
   status: string;
   status_display: string;
-  fpga_id: number | null;
-  board_id: string | null;
+  /** Admin-only. The user dashboard never shows which board a build ran on. */
+  fpga_id?: number | null;
+  board_id?: string | null;
+  /** The reservation this build ran in; `mrg run --session <id>` reconnects while it's held. */
+  session_id?: string | null;
   type: string;
   owner: string;
   submitted_by: string;

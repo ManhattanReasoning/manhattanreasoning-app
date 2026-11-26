@@ -5,14 +5,14 @@ import { CancelButton } from "../components/CancelButton";
 import { Logs } from "../components/Logs";
 import { PhaseBadge } from "../components/Phase";
 import { Pipeline } from "../components/Pipeline";
-import { boardName, formatWhen, isFinished, shortId } from "../format";
+import { formatWhen, isFinished, shortId } from "../format";
 import { buildPhase, canCancel, failedWhileFlashing } from "../phase";
 import { useResource } from "../useResource";
 
 const POLL_MS = 4000;
 
 /** One line saying what the build is doing, in plain words. */
-function describe(phase: string, board: string, flashFailed: boolean): string {
+function describe(phase: string, flashFailed: boolean): string {
   switch (phase) {
     case "queued":
       return "Waiting for a build slot";
@@ -21,17 +21,17 @@ function describe(phase: string, board: string, flashFailed: boolean): string {
     case "waiting":
       return "Build finished, waiting for a free board";
     case "flashing":
-      return `Flashing ${board}. It cannot be cancelled until this finishes`;
+      return "Flashing the board. It cannot be cancelled until this finishes";
     case "running":
-      return `Running on ${board}`;
+      return "Running on the board";
     case "failed":
       return flashFailed
-        ? `The build worked, but flashing ${board} failed. The design never ran`
+        ? "The build worked, but flashing the board failed. The design never ran"
         : "Failed during the build, never ran on a board";
     case "cancelled":
       return "Cancelled";
     default:
-      return board === "—" ? "Built and flashed" : `Built and flashed to ${board}`;
+      return "Built and flashed";
   }
 }
 
@@ -48,7 +48,6 @@ export function BuildDetail() {
 
   const notFound = job.error instanceof ApiError && job.error.status === 404;
   const phase = data ? buildPhase(data.status, data.pipeline) : "";
-  const board = data ? boardName(data.board_id ?? data.fpga_id) : "—";
   const live = data ? !isFinished(data.status) : false;
 
   return (
@@ -74,7 +73,7 @@ export function BuildDetail() {
             {canCancel(phase) ? <CancelButton jobId={data.job_id} onDone={() => void reload()} /> : null}
           </div>
           <p className="sub">
-            {describe(phase, board, failedWhileFlashing(data.pipeline))} · submitted by {data.submitted_by} · {data.relative_time ?? ""}{" "}
+            {describe(phase, failedWhileFlashing(data.pipeline))} · submitted by {data.submitted_by} · {data.relative_time ?? ""}{" "}
             ({data.submitted_at_formatted ?? formatWhen(data.submitted_at)})
           </p>
 
@@ -93,13 +92,17 @@ export function BuildDetail() {
               <div className="label">Board time</div>
               <div className="val">
                 {data.board_time_formatted ??
-                  (data.status === "failed" && data.board_id == null ? "never ran" : "not recorded yet")}
+                  (data.status === "failed" && data.board_time_seconds == null ? "never ran" : "not recorded yet")}
               </div>
             </div>
-            <div className="tile">
-              <div className="label">Board</div>
-              <div className="val">{board}</div>
-            </div>
+            {data.session_id ? (
+              <div className="tile">
+                <div className="label">Session</div>
+                <div className="val mono" title={data.session_id}>
+                  {data.session_id.slice(0, 8)}
+                </div>
+              </div>
+            ) : null}
           </div>
 
           <section className="pipeline-section" aria-labelledby="pipe-h">

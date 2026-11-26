@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { ApiError, cancelJob } from "../api";
 import type { RecentBuild } from "../api";
-import { boardName, formatWhen, isInFlight, shortId } from "../format";
+import { formatWhen, isInFlight, shortId } from "../format";
 import { canCancel } from "../phase";
 import { PhasePill, useLivePhase } from "./Phase";
 
@@ -139,9 +139,6 @@ function RunCardView({ build, phase, onChanged }: { build: RecentBuild; phase: s
       <div className="meta">
         <span>
           {live ? "Elapsed" : "Duration"} <strong>{build.duration_formatted ?? "—"}</strong>
-        </span>
-        <span>
-          Board <strong>{boardName(build.board_id)}</strong>
         </span>
         {build.command ? <span className="mono">{build.command}</span> : null}
       </div>
