@@ -1,6 +1,7 @@
 import { NavLink, Link, Route, Routes } from "react-router-dom";
 import { Account } from "./components/Account";
 import { Loading, LoadError, Logo } from "./components/Bits";
+import { NavIcon } from "./components/NavIcon";
 import { BuildDetail } from "./pages/BuildDetail";
 import { Builds } from "./pages/Builds";
 import { Landing } from "./pages/Landing";
@@ -47,18 +48,23 @@ export function App({ loginError }: { loginError: string | null }) {
       <div className="shell">
         <nav className="sidebar" aria-label="Dashboard">
           <NavLink to="/" end className="side-link">
+            <NavIcon name="overview" />
             Overview
           </NavLink>
           <NavLink to="/projects" className="side-link">
+            <NavIcon name="projects" />
             Projects
           </NavLink>
           <NavLink to="/builds" className="side-link">
+            <NavIcon name="builds" />
             Builds
           </NavLink>
           <NavLink to="/membership" className="side-link">
+            <NavIcon name="membership" />
             Membership
           </NavLink>
           <span className="side-link side-stub" aria-disabled="true" title="Coming soon">
+            <NavIcon name="secrets" />
             Secrets
             <span className="soon">soon</span>
           </span>

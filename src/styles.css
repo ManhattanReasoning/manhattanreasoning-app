@@ -121,6 +121,7 @@ code, .mono { font-family: var(--mono); font-size: 0.9em; }
   display: flex; align-items: center; gap: 11px; padding: 9px 11px; border-radius: 8px; line-height: 1.2;
   color: var(--ink-2); font-size: 14px;
 }
+.side-icon { flex: none; }
 .side-link:hover { background: var(--line-soft); text-decoration: none; color: var(--ink); }
 .side-link.active { background: rgba(37, 99, 235, 0.09); color: var(--accent-ink); font-weight: 600; }
 .shell-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
@@ -418,9 +419,9 @@ h2 { font-size: 15px; font-weight: 600; margin-bottom: 12px; }
 .menu button:disabled { color: var(--ink-3); cursor: default; }
 .menu .menu-danger { color: var(--bad); }
 
-.side-stub { color: #94A3B8; cursor: not-allowed; justify-content: space-between; }
+.side-stub { color: #94A3B8; cursor: not-allowed; }
 .side-stub:hover { background: none; color: #94A3B8; }
-.soon { font-size: 11px; background: var(--line); color: var(--ink-2); border-radius: 10px; padding: 1px 7px; }
+.soon { margin-left: auto; font-size: 11px; background: var(--line); color: var(--ink-2); border-radius: 10px; padding: 1px 7px; }
 
 /* ---------------- live / history tabs ---------------- */
 
