@@ -160,6 +160,8 @@ export interface JobDetail {
   /** Admin-only. The user dashboard never shows which board a build ran on. */
   fpga_id?: number | null;
   board_id?: string | null;
+  /** The reservation this build ran in; `mrg run --session <id>` reconnects while it's held. */
+  session_id?: string | null;
   type: string;
   owner: string;
   submitted_by: string;

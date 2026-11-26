@@ -95,6 +95,14 @@ export function BuildDetail() {
                   (data.status === "failed" && data.board_time_seconds == null ? "never ran" : "not recorded yet")}
               </div>
             </div>
+            {data.session_id ? (
+              <div className="tile">
+                <div className="label">Session</div>
+                <div className="val mono" title={data.session_id}>
+                  {data.session_id.slice(0, 8)}
+                </div>
+              </div>
+            ) : null}
           </div>
 
           <section className="pipeline-section" aria-labelledby="pipe-h">
