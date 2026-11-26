@@ -1,7 +1,7 @@
 /** "0b6f3c1e": enough of a job id to recognise, short enough for a table. */
 export const shortId = (id: string) => id.slice(0, 8);
 
-/** The API names a board by its number ("0".."6"). */
+/** How admin views name a board. User views never show which board a build used. */
 export const boardName = (id: string | number | null | undefined) =>
   id == null || id === "" ? "—" : /^\d+$/.test(String(id)) ? `Board ${id}` : String(id);
 

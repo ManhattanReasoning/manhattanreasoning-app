@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import type { RecentBuild } from "../api";
-import { boardName, formatWhen, shortId } from "../format";
+import { formatWhen, shortId } from "../format";
 import { RowStatus } from "./Phase";
 
 export function BuildsTable({ builds }: { builds: RecentBuild[] }) {
@@ -12,7 +12,6 @@ export function BuildsTable({ builds }: { builds: RecentBuild[] }) {
             <th scope="col">Build</th>
             <th scope="col">Project</th>
             <th scope="col">Status</th>
-            <th scope="col">Board</th>
             <th scope="col">Duration</th>
             <th scope="col">When</th>
           </tr>
@@ -29,7 +28,6 @@ export function BuildsTable({ builds }: { builds: RecentBuild[] }) {
               <td>
                 <RowStatus build={b} />
               </td>
-              <td>{boardName(b.board_id)}</td>
               <td>{b.duration_formatted ?? "—"}</td>
               <td title={formatWhen(b.submitted_at)}>{b.relative_time ?? formatWhen(b.submitted_at)}</td>
             </tr>

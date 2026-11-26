@@ -49,7 +49,9 @@ describe("rendering", () => {
     expect(html).toContain(`href="/builds/${build.job_id}"`);
     expect(html).toMatch(/#(<!-- -->)?0b6f3c1e/);
     expect(html).toContain("Complete");
-    expect(html).toContain("Board 3");
+    // Which board a build ran on is never shown to users, even if the API sends it.
+    expect(html).not.toMatch(/Board/);
+    expect(html).not.toContain(">3<");
     expect(html).toContain("5m 0s");
   });
 
@@ -69,7 +71,6 @@ describe("rendering", () => {
     relative_time: "2h ago",
     duration_seconds: 41,
     duration_formatted: "0:41",
-    board_id: null,
     command: "mrg run app.py",
   };
 
@@ -84,6 +85,7 @@ describe("rendering", () => {
     expect(html).not.toContain("Elapsed");
     expect(html).toContain("mrg run app.py");
     expect(html).toContain(`href="/builds/${finished.job_id}"`);
+    expect(html).not.toMatch(/Board/);
   });
 
   it("uses the GitHub photo when there is a username, without sending a referrer", () => {
